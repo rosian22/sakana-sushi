@@ -1,0 +1,41 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: sushi-mongo
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: sushi-backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Mongo__ConnectionString: mongodb://mongo:27017
+      Mongo__Database: sushi
+      # Change these before exposing the app anywhere public.
+      Jwt__Key: local-dev-jwt-secret-please-change-0123456789
+      Admin__Email: admin@sushi.local
+      Admin__Password: Admin123!
+      # Uncomment once you have a payment processor account (see StripeProvider):
+      # Payments__Stripe__SecretKey: sk_live_...
+    ports:
+      - "5000:8080" # direct API access + Swagger at http://localhost:5000/swagger
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: sushi-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
