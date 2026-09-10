@@ -17,12 +17,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       Mongo__ConnectionString: mongodb://mongo:27017
       Mongo__Database: sushi
-      # Change these before exposing the app anywhere public.
-      Jwt__Key: local-dev-jwt-secret-please-change-0123456789
-      Admin__Email: admin@sushi.local
-      Admin__Password: Admin123!
-      # Uncomment once you have a payment processor account (see StripeProvider):
-      # Payments__Stripe__SecretKey: sk_live_...
+      # Configure in .env (copy .env.example) — never commit real values.
+      Jwt__Key: ${JWT_KEY:?Set JWT_KEY in .env (copy .env.example)}
+      Admin__Email: ${ADMIN_EMAIL:?Set ADMIN_EMAIL in .env (copy .env.example)}
+      Admin__Password: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env (copy .env.example)}
+      # Uncomment once you have a payment processor account (see StripeProvider),
+      # and set STRIPE_SECRET_KEY in .env:
+      # Payments__Stripe__SecretKey: ${STRIPE_SECRET_KEY}
     ports:
       - "5000:8080" # direct API access + Swagger at http://localhost:5000/swagger
     depends_on:

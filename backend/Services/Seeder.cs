@@ -9,10 +9,14 @@ public static class Seeder
     {
         var db = services.GetRequiredService<MongoContext>();
 
-        var adminEmail = config["Admin:Email"] ?? "admin@sushi.local";
-        var adminPassword = config["Admin:Password"] ?? "Admin123!";
-        var admin = await db.Users.Find(u => u.Email == adminEmail).FirstOrDefaultAsync();
-        if (admin is null)
+        var adminEmail = config["Admin:Email"];
+        var adminPassword = config["Admin:Password"];
+        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+        {
+            logger.LogWarning(
+                "Admin:Email / Admin:Password not configured — skipping admin account seeding");
+        }
+        else if (await db.Users.Find(u => u.Email == adminEmail).FirstOrDefaultAsync() is null)
         {
             await db.Users.InsertOneAsync(new User
             {

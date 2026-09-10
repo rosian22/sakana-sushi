@@ -12,6 +12,7 @@ Full-stack sushi ordering app:
 ## Run it
 
 ```bash
+cp .env.example .env   # then set JWT_KEY, ADMIN_EMAIL and ADMIN_PASSWORD
 docker compose up -d --build
 ```
 
@@ -21,7 +22,7 @@ docker compose up -d --build
 | http://localhost:3000/admin      | Admin panel                  |
 | http://localhost:5000/swagger    | API docs (Swagger UI)        |
 
-**Admin account:** `admin@sushi.local` / `Admin123!` (change in `docker-compose.yml`).
+**Admin account:** seeded on first start from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in your `.env`.
 
 The database is seeded on first start with a full menu. Data persists in the
 `mongo-data` Docker volume; `docker compose down -v` resets everything.
@@ -40,8 +41,8 @@ The database is seeded on first start with a full menu. Data persists in the
 
 Payment methods are pluggable (`backend/Services/Payments/`). Enabled today:
 cash on delivery and card on delivery. A **Stripe provider slot** is included —
-it appears at checkout automatically once `Payments__Stripe__SecretKey` is set
-in `docker-compose.yml` and `StripeProvider.InitiateAsync` is implemented
+it appears at checkout automatically once `STRIPE_SECRET_KEY` is set in your
+`.env` (see `docker-compose.yml`) and `StripeProvider.InitiateAsync` is implemented
 (step-by-step notes are in that file). `POST /api/payments/webhook` is reserved
 for the processor's payment confirmations.
 
